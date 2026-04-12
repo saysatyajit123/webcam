@@ -66,7 +66,7 @@ downloadBtn.addEventListener('click', () => {
   const title = imgTitleInput.value.trim() || "photo";
   const link = document.createElement('a');
   link.download = `${title}.jpg`;
-  link.href = outputCanvas.toDataURL("image/jpeg", 1.0);
+  link.href = outputCanvas.toDataURL("image/png", 1.0);
   link.click();
-  imgTitleInput.reset();
+  imgTitleInput.value = '';
 });
