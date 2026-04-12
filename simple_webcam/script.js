@@ -68,4 +68,5 @@ downloadBtn.addEventListener('click', () => {
   link.download = `${title}.jpg`;
   link.href = outputCanvas.toDataURL("image/jpeg", 1.0);
   link.click();
+  imgTitleInput.reset();
 });
