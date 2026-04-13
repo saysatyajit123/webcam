@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Dual Photo Capture</title>
+<style>
+    body {
+        font-family: Arial;
+        text-align: center;
+        background: #f4f4f4;
+    }
+
+    video {
+        width: 300px;
+        border: 2px solid #333;
+        border-radius: 10px;
+    }
+
+    canvas {
+        margin: 10px;
+        border: 2px solid #555;
+    }
+
+    .container {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+
+    button {
+        padding: 10px 20px;
+        margin: 10px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+</style>
+</head>
+<body>
+
+<h2>Photo Capture System</h2>
+
+<video id="video" autoplay></video>
+
+<div>
+    <button onclick="captureUser()">Capture User Photo</button>
+    <button onclick="captureID()">Capture ID Photo</button>
+    <button onclick="combineImages()">Combine Photos</button>
+</div>
+
+<div class="container">
+    <div>
+        <h3>User Photo</h3>
+        <canvas id="userCanvas" width="300" height="220"></canvas>
+    </div>
+
+    <div>
+        <h3>ID Photo</h3>
+        <canvas id="idCanvas" width="300" height="220"></canvas>
+    </div>
+</div>
+
+<h3>Final Combined Image</h3>
+<canvas id="finalCanvas" width="620" height="240"></canvas>
+
+<br>
+<button onclick="downloadImage()">Download Image</button>
+
+<script>
+let video = document.getElementById("video");
+
+// Start camera
+navigator.mediaDevices.getUserMedia({ video: true })
+.then(stream => {
+    video.srcObject = stream;
+})
+.catch(err => {
+    alert("Camera access denied!");
+});
+
+// Capture user photo
+function captureUser() {
+    let canvas = document.getElementById("userCanvas");
+    let ctx = canvas.getContext("2d");
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+}
+
+// Capture ID photo
+function captureID() {
+    let canvas = document.getElementById("idCanvas");
+    let ctx = canvas.getContext("2d");
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+}
+
+// Combine images
+function combineImages() {
+    let finalCanvas = document.getElementById("finalCanvas");
+    let ctx = finalCanvas.getContext("2d");
+
+    let userCanvas = document.getElementById("userCanvas");
+    let idCanvas = document.getElementById("idCanvas");
+
+    ctx.clearRect(0, 0, finalCanvas.width, finalCanvas.height);
+
+    ctx.drawImage(userCanvas, 0, 0);
+    ctx.drawImage(idCanvas, 320, 0);
+}
+
+// Download combined image
+function downloadImage() {
+    let finalCanvas = document.getElementById("finalCanvas");
+    let link = document.createElement("a");
+    link.download = "combined_photo.png";
+    link.href = finalCanvas.toDataURL();
+    link.click();
+}
+</script>
+
+</body>
+</html>
