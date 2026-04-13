@@ -2,97 +2,130 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Dual Photo Capture</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Photo Capture</title>
+
 <style>
-    body {
-        font-family: Arial;
-        text-align: center;
-        background: #f4f4f4;
-    }
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f2f2f2;
+    text-align: center;
+}
 
-    video {
-        width: 300px;
-        border: 2px solid #333;
-        border-radius: 10px;
-    }
+h2 {
+    margin: 10px 0;
+}
 
-    canvas {
-        margin: 10px;
-        border: 2px solid #555;
-    }
+video {
+    width: 100%;
+    max-height: 300px;
+    object-fit: cover;
+    border-bottom: 3px solid #333;
+}
 
-    .container {
-        display: flex;
-        justify-content: center;
-        gap: 20px;
-        flex-wrap: wrap;
-    }
+.container {
+    padding: 10px;
+}
 
-    button {
-        padding: 10px 20px;
-        margin: 10px;
-        font-size: 16px;
-        cursor: pointer;
-    }
+.canvas-box {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+canvas {
+    width: 48%;
+    border-radius: 10px;
+    border: 2px solid #444;
+}
+
+button {
+    width: 100%;
+    padding: 15px;
+    margin: 8px 0;
+    font-size: 16px;
+    border: none;
+    border-radius: 10px;
+    background: #007bff;
+    color: white;
+}
+
+button:active {
+    background: #0056b3;
+}
+
+#combineBtn {
+    background: #28a745;
+}
+
+#downloadBtn {
+    background: #ff5722;
+}
+
+#finalCanvas {
+    width: 100%;
+    margin-top: 10px;
+    border: 2px solid #000;
+    border-radius: 10px;
+}
 </style>
 </head>
+
 <body>
 
-<h2>Photo Capture System</h2>
+<h2>📸 Capture Photos</h2>
 
-<video id="video" autoplay></video>
-
-<div>
-    <button onclick="captureUser()">Capture User Photo</button>
-    <button onclick="captureID()">Capture ID Photo</button>
-    <button onclick="combineImages()">Combine Photos</button>
-</div>
+<video id="video" autoplay playsinline></video>
 
 <div class="container">
-    <div>
-        <h3>User Photo</h3>
-        <canvas id="userCanvas" width="300" height="220"></canvas>
-    </div>
 
-    <div>
-        <h3>ID Photo</h3>
+    <button onclick="captureUser()">👤 Capture User Photo</button>
+    <button onclick="captureID()">🪪 Capture ID Photo</button>
+    <button id="combineBtn" onclick="combineImages()">🔗 Combine Photos</button>
+
+    <div class="canvas-box">
+        <canvas id="userCanvas" width="300" height="220"></canvas>
         <canvas id="idCanvas" width="300" height="220"></canvas>
     </div>
+
+    <canvas id="finalCanvas" width="640" height="240"></canvas>
+
+    <button id="downloadBtn" onclick="downloadImage()">⬇️ Download</button>
+
 </div>
-
-<h3>Final Combined Image</h3>
-<canvas id="finalCanvas" width="620" height="240"></canvas>
-
-<br>
-<button onclick="downloadImage()">Download Image</button>
 
 <script>
 let video = document.getElementById("video");
 
-// Start camera
-navigator.mediaDevices.getUserMedia({ video: true })
+// Open rear camera (important for mobile)
+navigator.mediaDevices.getUserMedia({
+    video: {
+        facingMode: "environment"
+    }
+})
 .then(stream => {
     video.srcObject = stream;
 })
 .catch(err => {
-    alert("Camera access denied!");
+    alert("Camera access error!");
 });
 
-// Capture user photo
+// Capture User
 function captureUser() {
     let canvas = document.getElementById("userCanvas");
     let ctx = canvas.getContext("2d");
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 }
 
-// Capture ID photo
+// Capture ID
 function captureID() {
     let canvas = document.getElementById("idCanvas");
     let ctx = canvas.getContext("2d");
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 }
 
-// Combine images
+// Combine
 function combineImages() {
     let finalCanvas = document.getElementById("finalCanvas");
     let ctx = finalCanvas.getContext("2d");
@@ -102,15 +135,15 @@ function combineImages() {
 
     ctx.clearRect(0, 0, finalCanvas.width, finalCanvas.height);
 
-    ctx.drawImage(userCanvas, 0, 0);
-    ctx.drawImage(idCanvas, 320, 0);
+    ctx.drawImage(userCanvas, 0, 0, 320, 240);
+    ctx.drawImage(idCanvas, 320, 0, 320, 240);
 }
 
-// Download combined image
+// Download
 function downloadImage() {
     let finalCanvas = document.getElementById("finalCanvas");
     let link = document.createElement("a");
-    link.download = "combined_photo.png";
+    link.download = "photo_combined.png";
     link.href = finalCanvas.toDataURL();
     link.click();
 }
